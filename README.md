@@ -17,4 +17,4 @@ folder contains the following:
 - Challenge Hints HTML file (contains links to SAS documentation)
 
 ## Requirements
-- SAS9
+- SAS9 or SAS Viya

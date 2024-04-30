@@ -1,7 +1,7 @@
 ********************
 *  ACCESS DATA     *
 ********************;
-%let path=C:\Users\pestyl\Desktop\github repos\SAS Case Studies and Workshops\SAS GF 2017 Data Cleansing Workshop;
+%let path=/*path*/;
 libname quakes "&path";
 
 
@@ -35,11 +35,13 @@ proc freq data=earthquakes_clean order=freq;
 	tables ID; 
 run;
 
+%let valid_region_codes = "1", "10", "15", "20", "30", "40", "50", "60", "70", "80", "90","100", "110", "120", "130", "140", "150", "160", "170";
+
 data earthquakes_valid invalid; 
 	set earthquakes_clean;
 /*The following are the valid values. Will output to earthquakes_valid*/ 
 	if (ID ne '10301' and /*Everything except the duplicate value*/
-		Region_code in ("1", "10", "15", "20", "30", "40", "50", "60", "70", "80", "90","100", "110", "120", "130", "140", "150", "160", "170") and /*Only valid region_code values*/
+		Region_code in (&valid_region_codes) and /*Only valid region_code values*/
 		Flag_Tsunami in ('','TSU') and  /*Only valid Flag_Tsunami values*/ 
 		Date_time ne . and /*Only Date_time values that are not missing*/
 		(0 <= EQ_Primary <= 9.9) and (0 <= Focal_Depth <= 700)) then output earthquakes_valid;
@@ -57,7 +59,7 @@ data invalid;
 	Invalid_description="";
 /*Test the following conditions. If one is true add the reason why to the Invalid_description value. Value will concatenate*/
 	if ID='10301' then Invalid_description = catx(',','DuplicateID', Invalid_description); 
-	if Region_code not in ("1", "10", "15", "20", "30", "40", "50", "60", "70", "80", "90","100", "110", "120", "130", "140", "150", "160", "170") 
+	if Region_code not in (&valid_region_codes) 
 	     then Invalid_description = catx(',','Region Code', Invalid_description); 
 	if Flag_Tsunami not in ('','TSU') then Invalid_description = catx(',','Flag_Tsunami', Invalid_description); 
 	if Date_time = . then Invalid_description = catx(',','Date Time', Invalid_description); 
